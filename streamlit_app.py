@@ -6,12 +6,15 @@ import streamlit as st
 
 
 """
-# Welcome to Streamlit!
+# Welcome to Covid Simulation powered by Xplain Data and Streamlit!
 
 Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+If you likes, checkout streamlit [documentation](https://docs.streamlit.io) and [xplain python API doc](https://docs.xplain-data.de/xplaindoc/interfaces/xplainpy.html).
+
+This is an example application to demonstrate how to build application based on streamlit and xplain data
+The data source are served by covid simulation https://demo.aws-xplain-data.de/objectexplorer/index.html
+
 
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
