@@ -66,8 +66,6 @@ with st.echo(code_location='below'):
         ],
     })
 
-
-
     scenario = st.radio(
         "Simulated Scenario",
         ('1) Without Intervention',
@@ -91,13 +89,7 @@ with st.echo(code_location='below'):
         }
     })
 
-
-
     df = x.get_result("covid")
-
-    print(scenario)
-    print(df)
-
     fig =px.bar(df, x="Connection Number Household Members",
                 y="# Static Network",
                 color="Infected by",
