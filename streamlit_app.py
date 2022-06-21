@@ -4,6 +4,7 @@ import math
 import pandas as pd
 import streamlit as st
 
+
 """
 # Welcome to Streamlit!
 
@@ -14,25 +15,94 @@ forums](https://discuss.streamlit.io).
 
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
-
+user_2_replace = "user"
+password_2_replace = "xplainData"
 
 with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+    import xplain
+    import plotly.express as px
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+    x = xplain.Xsession(url="https://demo.aws-xplain-data.de", user=user_2_replace,
+                        password=password_2_replace)
+    x.startup("Covid Simulation 300d")
 
-    points_per_turn = total_points / num_turns
+    x.open_query({
+        "requestName": "covid",
+        "aggregations": [{
+            "aggregationType": "COUNT",
+            "object": "Static Network",
+            "type": "COUNT"
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+        }],
+        "externalSelections": "external / global",
+        "groupBys": [
+            {
+                "subGroupings": [
+                    {
+                        "attribute": {
+                            "dimension": "Connection Number Household Members",
+                            "name": "Connection Number Household Members",
+                            "object": "Static Network"
+                        },
+                        "groupByLevelNumber": 1,
+                        "includeUpperLevels": False
+                    },
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+                    {
+                        "attribute": {
+                            "dimension": "Infected by",
+                            "name": "Infected by",
+                            "object": "Resident"
+                        },
+                        "groupByLevelNumber": 1,
+                        "includeUpperLevels": False
+                    }
+
+                ]
+            }
+        ],
+    })
+
+
+
+    scenario = st.radio(
+        "Simulated Scenario",
+        ('1) Without Intervention',
+         '2) Slow Contact Restrictions',
+         '3) Quick Contact Restrictions',
+         '4) Random Quicktests',
+         '5) AI-Based Quicktests'
+         ))
+
+    plot_spot = st.empty()
+
+    x.run({
+        "method": "select",
+        "selection": {
+            "attribute": {
+                "name": "Simulated Scenario",
+                "dimension": "Simulated Scenario",
+                "object": "Resident"
+            },
+            "selectedStates": [scenario]
+        }
+    })
+
+
+
+    df = x.get_result("covid")
+
+    print(scenario)
+    print(df)
+
+    fig =px.bar(df, x="Connection Number Household Members",
+                y="# Static Network",
+                color="Infected by",
+                title="Static Network by number household members")
+
+    with plot_spot:
+        st.plotly_chart(fig)
+
+
+
+
